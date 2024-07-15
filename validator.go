@@ -7,10 +7,8 @@ import (
 	"github.com/go-playground/validator/v10"
 	entranslations "github.com/go-playground/validator/v10/translations/en"
 	zhtranslations "github.com/go-playground/validator/v10/translations/zh"
-	"github.com/gopi-frame/contract/validation"
+	"github.com/gopi-frame/validation/contract"
 )
-
-var _ validation.Engine = (*Validator)(nil)
 
 // NewValidator new validator
 func NewValidator() *Validator {
@@ -35,12 +33,14 @@ type Validator struct {
 }
 
 // ValidateForm validate form
-func (v *Validator) ValidateForm(form validation.Form) {
+func (v *Validator) ValidateForm(form contract.Form) {
 	err := v.Struct(form)
 	if err == nil {
-		form.CustomRules().Each(func(key int, value validation.Rule) bool {
-			return value.Validate(form)
-		})
+		for _, rule := range form.CustomRules() {
+			if !rule.Validate(form) {
+				break
+			}
+		}
 		return
 	}
 	errs, ok := err.(validator.ValidationErrors)

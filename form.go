@@ -3,16 +3,12 @@ package validation
 import (
 	"strings"
 
-	"github.com/gopi-frame/contract/support"
-	"github.com/gopi-frame/contract/validation"
-	"github.com/gopi-frame/support/lists"
+	"github.com/gopi-frame/validation/contract"
 )
-
-var _ validation.Form = (*Form)(nil)
 
 // Form abstract form
 type Form struct {
-	validation.Form
+	contract.Form
 	locale   string
 	messages map[string][]string
 }
@@ -69,6 +65,6 @@ func (f *Form) AddError(key, message string) {
 }
 
 // CustomRules custom rules
-func (f *Form) CustomRules() support.List[validation.Rule] {
-	return lists.NewList[validation.Rule]()
+func (f *Form) CustomRules() []contract.Rule {
+	return nil
 }
