@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/gopi-frame/contract/validation"
 	"github.com/gopi-frame/validation/code"
+	error2 "github.com/gopi-frame/validation/error"
 	"github.com/gopi-frame/validation/is"
 	"github.com/gopi-frame/validation/message"
 )
@@ -47,7 +48,7 @@ func IsURL() StringRuleFunc {
 func IsURLWithScheme(scheme string) StringRuleFunc {
 	return func(ctx context.Context, builder validation.ErrorBuilder, s string) validation.Error {
 		if !is.URLWithScheme(s, scheme) {
-			return builder.BuildError(code.IsURLWithScheme, message.IsURLWithScheme, NewParam("scheme", scheme))
+			return builder.BuildError(code.IsURLWithScheme, message.IsURLWithScheme, error2.NewParam("scheme", scheme))
 		}
 		return nil
 	}

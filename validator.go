@@ -3,8 +3,8 @@ package validation
 import (
 	"context"
 	"github.com/gopi-frame/contract/validation"
+	error2 "github.com/gopi-frame/validation/error"
 	"github.com/gopi-frame/validation/translator"
-	"github.com/gopi-frame/validation/validator"
 )
 
 var _instance *Validator
@@ -15,6 +15,11 @@ func init() {
 		panic(err)
 	}
 	_instance = instance
+}
+
+// SetDefaultValidator replaces the default validator instance with the given one.
+func SetDefaultValidator(v *Validator) {
+	_instance = v
 }
 
 type contextKey string
@@ -44,12 +49,11 @@ func (v *validateContext) AddValidate(key string, validator validation.Validatab
 	v.validators[key] = append(v.validators[key], validator)
 }
 
-type Option func(v validation.Validator) error
-
 type Validator struct {
 	translator      validation.Translator
 	defaultLanguage string
 	errorBuilder    validation.ErrorBuilder
+	messages        map[string]string
 }
 
 func NewValidator(options ...Option) (*Validator, error) {
@@ -63,32 +67,12 @@ func NewValidator(options ...Option) (*Validator, error) {
 	return v, nil
 }
 
-func WithTranslator(translator validation.Translator) Option {
-	return func(v validation.Validator) error {
-		v.(*Validator).translator = translator
-		return nil
-	}
-}
-
-func WithDefaultLanguage(language string) Option {
-	return func(v validation.Validator) error {
-		v.(*Validator).defaultLanguage = language
-		return nil
-	}
-}
-
-func WithErrorBuilder(builder validation.ErrorBuilder) Option {
-	return func(v validation.Validator) error {
-		v.(*Validator).errorBuilder = builder
-		return nil
-	}
-}
-
 func (v *Validator) clone() *Validator {
 	return &Validator{
 		translator:      v.translator,
 		defaultLanguage: v.defaultLanguage,
 		errorBuilder:    v.errorBuilder,
+		messages:        v.messages,
 	}
 }
 
@@ -103,10 +87,13 @@ func (v *Validator) Validate(ctx context.Context, builders ...validation.Validat
 	} else if v2.defaultLanguage != "" {
 		v2.translator = v2.translator.Locale(v.defaultLanguage)
 	}
-	bag := validator.NewErrorBag(v2.translator)
+	bag := error2.NewErrorBag(v2.translator)
 	for key, validators := range validatorCtx.validators {
 		for _, v := range validators {
 			if err := v.Validate(ctx, v2); err != nil {
+				if message, ok := v2.messages[err.Code()]; ok {
+					err = err.SetMessage(message)
+				}
 				bag.AddError(key, err)
 			}
 		}
@@ -118,11 +105,11 @@ func (v *Validator) BuildError(code string, message string, params ...validation
 	if v.errorBuilder != nil {
 		return v.errorBuilder.BuildError(code, message, params...)
 	}
-	return validator.NewError(code, message, params...).SetTranslator(v.translator)
+	return error2.NewError(code, message, params...).SetTranslator(v.translator)
 }
 
-func Validate(ctx context.Context, builders ...validation.ValidatorBuilder) *validator.ErrorBag {
-	return _instance.Validate(ctx, builders...).(*validator.ErrorBag)
+func Validate(ctx context.Context, builders ...validation.ValidatorBuilder) *error2.ErrorBag {
+	return _instance.Validate(ctx, builders...).(*error2.ErrorBag)
 }
 
 func ValidateIt(ctx context.Context, validatable validation.Validatable) validation.ErrorBag {
@@ -134,11 +121,5 @@ func Value[T any](ctx context.Context, value T, rules ...validation.Rule[T]) val
 }
 
 func Attribute[T any](ctx context.Context, attribute string, value T, rules ...validation.Rule[T]) validation.ErrorBag {
-	var builders []validation.ValidatorBuilder
-	for _, rule := range rules {
-		builders = append(builders, NewBuilder(validator.ValidatableFunc(func(ctx context.Context, builder validation.ErrorBuilder) validation.Error {
-			return rule.Validate(ctx, builder, value)
-		})).SetAttribute(attribute))
-	}
-	return _instance.Validate(ctx, builders...)
+	return _instance.Validate(ctx, Group[T](attribute, value, rules...))
 }

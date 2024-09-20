@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/gopi-frame/contract/validation"
 	"github.com/gopi-frame/validation/code"
+	error2 "github.com/gopi-frame/validation/error"
 	"github.com/gopi-frame/validation/is"
 	"github.com/gopi-frame/validation/message"
 	"strconv"
@@ -13,7 +14,7 @@ import (
 func IsTime(layout string) StringRuleFunc {
 	return func(ctx context.Context, builder validation.ErrorBuilder, s string) validation.Error {
 		if !is.Time(s, layout) {
-			return builder.BuildError(code.IsTime, message.IsTime, NewParam("layout", strconv.Quote(layout)))
+			return builder.BuildError(code.IsTime, message.IsTime, error2.NewParam("layout", strconv.Quote(layout)))
 		}
 		return nil
 	}
@@ -112,12 +113,12 @@ func IsTimezone() StringRuleFunc {
 func IsBefore(layout string, other time.Time) StringRuleFunc {
 	return func(ctx context.Context, builder validation.ErrorBuilder, s string) validation.Error {
 		if t, err := time.ParseInLocation(layout, s, time.Local); err != nil {
-			return builder.BuildError(code.IsTime, message.IsTime, NewParam("format", layout))
+			return builder.BuildError(code.IsTime, message.IsTime, error2.NewParam("format", layout))
 		} else if !t.Before(other) {
 			return builder.BuildError(
 				code.IsBefore,
 				message.IsBefore,
-				NewParam("time", strconv.Quote(other.Format(layout))),
+				error2.NewParam("time", strconv.Quote(other.Format(layout))),
 			)
 		}
 		return nil
@@ -127,13 +128,13 @@ func IsBefore(layout string, other time.Time) StringRuleFunc {
 func IsBeforeTZ(layout string, tz *time.Location, other time.Time) StringRuleFunc {
 	return func(ctx context.Context, builder validation.ErrorBuilder, s string) validation.Error {
 		if t, err := time.ParseInLocation(layout, s, tz); err != nil {
-			return builder.BuildError(code.IsTime, message.IsTime, NewParam("format", layout))
+			return builder.BuildError(code.IsTime, message.IsTime, error2.NewParam("format", layout))
 		} else if !t.Before(other) {
 			return builder.BuildError(
 				code.IsBeforeTZ,
 				message.IsBeforeTZ,
-				NewParam("time", strconv.Quote(other.Format(layout))),
-				NewParam("timezone", strconv.Quote(tz.String())),
+				error2.NewParam("time", strconv.Quote(other.Format(layout))),
+				error2.NewParam("timezone", strconv.Quote(tz.String())),
 			)
 		}
 		return nil
@@ -143,12 +144,12 @@ func IsBeforeTZ(layout string, tz *time.Location, other time.Time) StringRuleFun
 func IsBeforeOrEqualTo(layout string, other time.Time) StringRuleFunc {
 	return func(ctx context.Context, builder validation.ErrorBuilder, s string) validation.Error {
 		if t, err := time.ParseInLocation(layout, s, time.Local); err != nil {
-			return builder.BuildError(code.IsTime, message.IsTime, NewParam("format", layout))
+			return builder.BuildError(code.IsTime, message.IsTime, error2.NewParam("format", layout))
 		} else if t.After(other) {
 			return builder.BuildError(
 				code.IsBeforeOrEqualTo,
 				message.IsBeforeOrEqualTo,
-				NewParam("time", strconv.Quote(other.Format(layout))),
+				error2.NewParam("time", strconv.Quote(other.Format(layout))),
 			)
 		}
 		return nil
@@ -158,13 +159,13 @@ func IsBeforeOrEqualTo(layout string, other time.Time) StringRuleFunc {
 func IsBeforeOrEqualToTZ(layout string, tz *time.Location, other time.Time) StringRuleFunc {
 	return func(ctx context.Context, builder validation.ErrorBuilder, s string) validation.Error {
 		if t, err := time.ParseInLocation(layout, s, tz); err != nil {
-			return builder.BuildError(code.IsTime, message.IsTime, NewParam("format", layout))
+			return builder.BuildError(code.IsTime, message.IsTime, error2.NewParam("format", layout))
 		} else if t.After(other) {
 			return builder.BuildError(
 				code.IsBeforeOrEqualToTZ,
 				message.IsBeforeOrEqualToTZ,
-				NewParam("time", strconv.Quote(other.Format(layout))),
-				NewParam("timezone", strconv.Quote(tz.String())),
+				error2.NewParam("time", strconv.Quote(other.Format(layout))),
+				error2.NewParam("timezone", strconv.Quote(tz.String())),
 			)
 		}
 		return nil
@@ -174,12 +175,12 @@ func IsBeforeOrEqualToTZ(layout string, tz *time.Location, other time.Time) Stri
 func IsAfter(layout string, other time.Time) StringRuleFunc {
 	return func(ctx context.Context, builder validation.ErrorBuilder, s string) validation.Error {
 		if t, err := time.ParseInLocation(layout, s, time.Local); err != nil {
-			return builder.BuildError(code.IsTime, message.IsTime, NewParam("format", layout))
+			return builder.BuildError(code.IsTime, message.IsTime, error2.NewParam("format", layout))
 		} else if !t.After(other) {
 			return builder.BuildError(
 				code.IsAfter,
 				message.IsAfter,
-				NewParam("time", strconv.Quote(other.Format(layout))),
+				error2.NewParam("time", strconv.Quote(other.Format(layout))),
 			)
 		}
 		return nil
@@ -189,13 +190,13 @@ func IsAfter(layout string, other time.Time) StringRuleFunc {
 func IsAfterTZ(layout string, tz *time.Location, other time.Time) StringRuleFunc {
 	return func(ctx context.Context, builder validation.ErrorBuilder, s string) validation.Error {
 		if t, err := time.ParseInLocation(layout, s, tz); err != nil {
-			return builder.BuildError(code.IsTime, message.IsTime, NewParam("format", layout))
+			return builder.BuildError(code.IsTime, message.IsTime, error2.NewParam("format", layout))
 		} else if !t.After(other) {
 			return builder.BuildError(
 				code.IsAfterTZ,
 				message.IsAfterTZ,
-				NewParam("time", strconv.Quote(other.Format(layout))),
-				NewParam("timezone", strconv.Quote(tz.String())),
+				error2.NewParam("time", strconv.Quote(other.Format(layout))),
+				error2.NewParam("timezone", strconv.Quote(tz.String())),
 			)
 		}
 		return nil
@@ -205,12 +206,12 @@ func IsAfterTZ(layout string, tz *time.Location, other time.Time) StringRuleFunc
 func IsAfterOrEqualTo(layout string, other time.Time) StringRuleFunc {
 	return func(ctx context.Context, builder validation.ErrorBuilder, s string) validation.Error {
 		if t, err := time.ParseInLocation(layout, s, time.Local); err != nil {
-			return builder.BuildError(code.IsTime, message.IsTime, NewParam("format", layout))
+			return builder.BuildError(code.IsTime, message.IsTime, error2.NewParam("format", layout))
 		} else if t.Before(other) {
 			return builder.BuildError(
 				code.IsAfterOrEqualTo,
 				message.IsAfterOrEqualTo,
-				NewParam("time", strconv.Quote(other.Format(layout))),
+				error2.NewParam("time", strconv.Quote(other.Format(layout))),
 			)
 		}
 		return nil
@@ -220,13 +221,13 @@ func IsAfterOrEqualTo(layout string, other time.Time) StringRuleFunc {
 func IsAfterOrEqualToTZ(layout string, tz *time.Location, other time.Time) StringRuleFunc {
 	return func(ctx context.Context, builder validation.ErrorBuilder, s string) validation.Error {
 		if t, err := time.ParseInLocation(layout, s, tz); err != nil {
-			return builder.BuildError(code.IsTime, message.IsTime, NewParam("format", layout))
+			return builder.BuildError(code.IsTime, message.IsTime, error2.NewParam("format", layout))
 		} else if t.Before(other) {
 			return builder.BuildError(
 				code.IsAfterOrEqualToTZ,
 				message.IsAfterOrEqualToTZ,
-				NewParam("time", strconv.Quote(other.Format(layout))),
-				NewParam("timezone", strconv.Quote(tz.String())),
+				error2.NewParam("time", strconv.Quote(other.Format(layout))),
+				error2.NewParam("timezone", strconv.Quote(tz.String())),
 			)
 		}
 		return nil

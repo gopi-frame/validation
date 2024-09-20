@@ -394,3 +394,45 @@ func TestHexadecimal(t *testing.T) {
 		assert.Equal(t, "value should be a hexadecimal number.", validated.GetError("value", code.IsHexadecimal).Error())
 	})
 }
+
+func TestLength(t *testing.T) {
+	t.Run("valid", func(t *testing.T) {
+		validated := Validate(context.Background(), Length("value", "123456", 6))
+		assert.False(t, validated.Fails())
+	})
+
+	t.Run("valid", func(t *testing.T) {
+		validated := Validate(context.Background(), Length("value", "1234567", 6))
+		if assert.True(t, validated.Fails()) {
+			assert.Equal(t, "value should have length 6.", validated.GetError("value", code.IsLength).Error())
+		}
+	})
+}
+
+func TestMinLength(t *testing.T) {
+	t.Run("valid", func(t *testing.T) {
+		validated := Validate(context.Background(), MinLength("value", "123456", 6))
+		assert.False(t, validated.Fails())
+	})
+
+	t.Run("invalid", func(t *testing.T) {
+		validated := Validate(context.Background(), MinLength("value", "1234", 6))
+		if assert.True(t, validated.Fails()) {
+			assert.Equal(t, "value should have length greater than or equal to 6.", validated.GetError("value", code.IsMinLength).Error())
+		}
+	})
+}
+
+func TestMaxLength(t *testing.T) {
+	t.Run("valid", func(t *testing.T) {
+		validated := Validate(context.Background(), MaxLength("value", "123456", 6))
+		assert.False(t, validated.Fails())
+	})
+
+	t.Run("invalid", func(t *testing.T) {
+		validated := Validate(context.Background(), MaxLength("value", "1234567", 6))
+		if assert.True(t, validated.Fails()) {
+			assert.Equal(t, "value should have length less than or equal to 6.", validated.GetError("value", code.IsMaxLength).Error())
+		}
+	})
+}

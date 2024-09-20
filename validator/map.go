@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/gopi-frame/contract/validation"
 	"github.com/gopi-frame/validation/code"
+	error2 "github.com/gopi-frame/validation/error"
 	"github.com/gopi-frame/validation/message"
 	"strconv"
 )
@@ -15,7 +16,7 @@ func IsContainsKey[K comparable, V any](key K) MapRuleFunc[K, V] {
 			return builder.BuildError(
 				code.IsContainsKey,
 				message.IsContainsKey,
-				NewParam("key", strconv.Quote(fmt.Sprintf("%v", key))),
+				error2.NewParam("key", strconv.Quote(fmt.Sprintf("%v", key))),
 			)
 		}
 		return nil
@@ -28,7 +29,7 @@ func IsNotContainsKey[K comparable, V any](key K) MapRuleFunc[K, V] {
 			return builder.BuildError(
 				code.IsNotContainsKey,
 				message.IsNotContainsKey,
-				NewParam("key", strconv.Quote(fmt.Sprintf("%v", key))),
+				error2.NewParam("key", strconv.Quote(fmt.Sprintf("%v", key))),
 			)
 		}
 		return nil

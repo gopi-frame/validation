@@ -134,7 +134,7 @@ func (m *mockUser) Validate(ctx context.Context, _ validation.ErrorBuilder) vali
 	)
 }
 
-func TestCustomValidatableData(t *testing.T) {
+func TestValidateIt(t *testing.T) {
 	t.Run("valid", func(t *testing.T) {
 		var user = &mockUser{
 			Username: "gopi",
@@ -173,4 +173,30 @@ func TestCustomValidatableData(t *testing.T) {
 			assert.True(t, validated.HasError("tags.2"))
 		}
 	})
+}
+
+func TestValidator_GlobalCustomErrorMessage(t *testing.T) {
+	var password = "1234"
+	validator, err := NewValidator(WithMessages(map[string]string{
+		code.IsMinLength: "{{.attribute}}长度不能少于{{.min}}",
+	}))
+	if !assert.NoError(t, err) {
+		assert.FailNow(t, err.Error())
+	}
+	validated := validator.Validate(context.Background(), MinLength("密码", password, 6).SetKey("password"))
+	if assert.True(t, validated.Fails()) {
+		assert.Equal(t, "密码长度不能少于6", validated.GetError("password", code.IsMinLength).Error())
+	}
+}
+
+func TestValidate_PartCustomErrorMessage(t *testing.T) {
+	var password = "1234"
+	validated := Validate(context.Background(), MinLength("password", password, 6)).SetMessages(map[string]map[string]string{
+		"password": {
+			code.IsMinLength: "密码长度不能小于6",
+		},
+	})
+	if assert.True(t, validated.Fails()) {
+		assert.Equal(t, "密码长度不能小于6", validated.GetError("password", code.IsMinLength).Error())
+	}
 }

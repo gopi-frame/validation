@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/gopi-frame/contract/validation"
 	"github.com/gopi-frame/validation/code"
+	error2 "github.com/gopi-frame/validation/error"
 	"github.com/gopi-frame/validation/is"
 	"github.com/gopi-frame/validation/message"
 	"regexp"
@@ -14,7 +15,7 @@ import (
 func IsLength(length int) StringRuleFunc {
 	return func(ctx context.Context, errorBuilder validation.ErrorBuilder, value string) validation.Error {
 		if len(value) != length {
-			return errorBuilder.BuildError(code.IsLength, message.IsLength, NewParam("length", strconv.Itoa(length)))
+			return errorBuilder.BuildError(code.IsLength, message.IsLength, error2.NewParam("length", strconv.Itoa(length)))
 		}
 		return nil
 	}
@@ -23,7 +24,7 @@ func IsLength(length int) StringRuleFunc {
 func IsMinLength(length int) StringRuleFunc {
 	return func(ctx context.Context, errorBuilder validation.ErrorBuilder, value string) validation.Error {
 		if len(value) < length {
-			return errorBuilder.BuildError(code.IsMinLength, message.IsMinLength, NewParam("min", strconv.Itoa(length)))
+			return errorBuilder.BuildError(code.IsMinLength, message.IsMinLength, error2.NewParam("min", strconv.Itoa(length)))
 		}
 		return nil
 	}
@@ -32,7 +33,7 @@ func IsMinLength(length int) StringRuleFunc {
 func IsMaxLength(length int) StringRuleFunc {
 	return func(ctx context.Context, errorBuilder validation.ErrorBuilder, value string) validation.Error {
 		if len(value) > length {
-			return errorBuilder.BuildError(code.IsMaxLength, message.IsMaxLength, NewParam("max", strconv.Itoa(length)))
+			return errorBuilder.BuildError(code.IsMaxLength, message.IsMaxLength, error2.NewParam("max", strconv.Itoa(length)))
 		}
 		return nil
 	}
@@ -41,7 +42,7 @@ func IsMaxLength(length int) StringRuleFunc {
 func IsStartsWith(prefix string) StringRuleFunc {
 	return func(ctx context.Context, errorBuilder validation.ErrorBuilder, value string) validation.Error {
 		if !strings.HasPrefix(value, prefix) {
-			return errorBuilder.BuildError(code.IsStartsWith, message.IsStartsWith, NewParam("prefix", strconv.Quote(prefix)))
+			return errorBuilder.BuildError(code.IsStartsWith, message.IsStartsWith, error2.NewParam("prefix", strconv.Quote(prefix)))
 		}
 		return nil
 	}
@@ -58,14 +59,14 @@ func IsStartsWithAny(prefixes ...string) StringRuleFunc {
 		for _, prefix := range prefixes {
 			ps = append(ps, strconv.Quote(prefix))
 		}
-		return errorBuilder.BuildError(code.IsStartsWithAny, message.IsStartsWithAny, NewParam("prefixes", strings.Join(ps, ", ")))
+		return errorBuilder.BuildError(code.IsStartsWithAny, message.IsStartsWithAny, error2.NewParam("prefixes", strings.Join(ps, ", ")))
 	}
 }
 
 func IsEndsWith(suffix string) StringRuleFunc {
 	return func(ctx context.Context, errorBuilder validation.ErrorBuilder, value string) validation.Error {
 		if !strings.HasSuffix(value, suffix) {
-			return errorBuilder.BuildError(code.IsEndsWith, message.IsEndsWith, NewParam("suffix", strconv.Quote(suffix)))
+			return errorBuilder.BuildError(code.IsEndsWith, message.IsEndsWith, error2.NewParam("suffix", strconv.Quote(suffix)))
 		}
 		return nil
 	}
@@ -82,14 +83,14 @@ func IsEndsWithAny(suffixes ...string) StringRuleFunc {
 		for _, suffix := range suffixes {
 			ss = append(ss, strconv.Quote(suffix))
 		}
-		return errorBuilder.BuildError(code.IsEndsWithAny, message.IsEndsWithAny, NewParam("suffixes", strings.Join(ss, ", ")))
+		return errorBuilder.BuildError(code.IsEndsWithAny, message.IsEndsWithAny, error2.NewParam("suffixes", strings.Join(ss, ", ")))
 	}
 }
 
 func IsNotStartsWith(prefix string) StringRuleFunc {
 	return func(ctx context.Context, errorBuilder validation.ErrorBuilder, value string) validation.Error {
 		if strings.HasPrefix(value, prefix) {
-			return errorBuilder.BuildError(code.IsNotStartsWith, message.IsNotStartsWith, NewParam("prefix", strconv.Quote(prefix)))
+			return errorBuilder.BuildError(code.IsNotStartsWith, message.IsNotStartsWith, error2.NewParam("prefix", strconv.Quote(prefix)))
 		}
 		return nil
 	}
@@ -103,7 +104,7 @@ func IsNotStartsWithAny(prefixes ...string) StringRuleFunc {
 				for _, prefix := range prefixes {
 					ps = append(ps, strconv.Quote(prefix))
 				}
-				return errorBuilder.BuildError(code.IsNotStartsWithAny, message.IsNotStartsWithAny, NewParam("prefixes", strings.Join(ps, ", ")))
+				return errorBuilder.BuildError(code.IsNotStartsWithAny, message.IsNotStartsWithAny, error2.NewParam("prefixes", strings.Join(ps, ", ")))
 			}
 		}
 		return nil
@@ -113,7 +114,7 @@ func IsNotStartsWithAny(prefixes ...string) StringRuleFunc {
 func IsNotEndsWith(suffix string) StringRuleFunc {
 	return func(ctx context.Context, errorBuilder validation.ErrorBuilder, value string) validation.Error {
 		if strings.HasSuffix(value, suffix) {
-			return errorBuilder.BuildError(code.IsNotEndsWith, message.IsNotEndsWith, NewParam("suffix", strconv.Quote(suffix)))
+			return errorBuilder.BuildError(code.IsNotEndsWith, message.IsNotEndsWith, error2.NewParam("suffix", strconv.Quote(suffix)))
 		}
 		return nil
 	}
@@ -127,7 +128,7 @@ func IsNotEndsWithAny(suffixes ...string) StringRuleFunc {
 				for _, suffix := range suffixes {
 					ss = append(ss, strconv.Quote(suffix))
 				}
-				return errorBuilder.BuildError(code.IsNotEndsWithAny, message.IsNotEndsWithAny, NewParam("suffixes", strings.Join(ss, ", ")))
+				return errorBuilder.BuildError(code.IsNotEndsWithAny, message.IsNotEndsWithAny, error2.NewParam("suffixes", strings.Join(ss, ", ")))
 			}
 		}
 		return nil
@@ -137,7 +138,7 @@ func IsNotEndsWithAny(suffixes ...string) StringRuleFunc {
 func IsMatch(pattern string) StringRuleFunc {
 	return func(ctx context.Context, errorBuilder validation.ErrorBuilder, value string) validation.Error {
 		if !regexp.MustCompile(pattern).MatchString(value) {
-			return errorBuilder.BuildError(code.IsMatch, message.IsMatch, NewParam("pattern", strconv.Quote(pattern)))
+			return errorBuilder.BuildError(code.IsMatch, message.IsMatch, error2.NewParam("pattern", strconv.Quote(pattern)))
 		}
 		return nil
 	}
@@ -146,7 +147,7 @@ func IsMatch(pattern string) StringRuleFunc {
 func IsNotMatch(pattern string) StringRuleFunc {
 	return func(ctx context.Context, errorBuilder validation.ErrorBuilder, value string) validation.Error {
 		if regexp.MustCompile(pattern).MatchString(value) {
-			return errorBuilder.BuildError(code.IsNotMatch, message.IsNotMatch, NewParam("pattern", strconv.Quote(pattern)))
+			return errorBuilder.BuildError(code.IsNotMatch, message.IsNotMatch, error2.NewParam("pattern", strconv.Quote(pattern)))
 		}
 		return nil
 	}
@@ -155,7 +156,7 @@ func IsNotMatch(pattern string) StringRuleFunc {
 func IsContains(substring string) StringRuleFunc {
 	return func(ctx context.Context, errorBuilder validation.ErrorBuilder, value string) validation.Error {
 		if !strings.Contains(value, substring) {
-			return errorBuilder.BuildError(code.IsContains, message.IsContains, NewParam("substring", strconv.Quote(substring)))
+			return errorBuilder.BuildError(code.IsContains, message.IsContains, error2.NewParam("substring", strconv.Quote(substring)))
 		}
 		return nil
 	}
@@ -164,7 +165,7 @@ func IsContains(substring string) StringRuleFunc {
 func IsNotContains(substring string) StringRuleFunc {
 	return func(ctx context.Context, errorBuilder validation.ErrorBuilder, value string) validation.Error {
 		if strings.Contains(value, substring) {
-			return errorBuilder.BuildError(code.IsNotContains, message.IsNotContains, NewParam("substring", strconv.Quote(substring)))
+			return errorBuilder.BuildError(code.IsNotContains, message.IsNotContains, error2.NewParam("substring", strconv.Quote(substring)))
 		}
 		return nil
 	}

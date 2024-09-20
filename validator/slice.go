@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/gopi-frame/contract/validation"
 	"github.com/gopi-frame/validation/code"
+	error2 "github.com/gopi-frame/validation/error"
 	"github.com/gopi-frame/validation/message"
 	"slices"
 	"strings"
@@ -21,7 +22,7 @@ func IsIncludes[T comparable](elements ...T) SliceRuleFunc[T] {
 				return builder.BuildError(
 					code.IsIncludes,
 					message.IsIncludes,
-					NewParam("values", strings.Join(includes, ", ")),
+					error2.NewParam("values", strings.Join(includes, ", ")),
 				)
 			}
 		}
@@ -40,7 +41,7 @@ func IsExcludes[T comparable](elements ...T) SliceRuleFunc[T] {
 				return builder.BuildError(
 					code.IsExcludes,
 					message.IsExcludes,
-					NewParam("values", strings.Join(excludes, ", ")),
+					error2.NewParam("values", strings.Join(excludes, ", ")),
 				)
 			}
 		}
@@ -64,7 +65,7 @@ func IsUnique[T comparable]() SliceRuleFunc[T] {
 func IsCount[T comparable](count int) SliceRuleFunc[T] {
 	return func(ctx context.Context, builder validation.ErrorBuilder, s []T) validation.Error {
 		if len(s) != count {
-			return builder.BuildError(code.IsCount, message.IsCount, NewParam("count", count))
+			return builder.BuildError(code.IsCount, message.IsCount, error2.NewParam("count", count))
 		}
 		return nil
 	}
@@ -73,7 +74,7 @@ func IsCount[T comparable](count int) SliceRuleFunc[T] {
 func IsMinCount[T comparable](count int) SliceRuleFunc[T] {
 	return func(ctx context.Context, builder validation.ErrorBuilder, s []T) validation.Error {
 		if len(s) < count {
-			return builder.BuildError(code.IsMinCount, message.IsMinCount, NewParam("count", count))
+			return builder.BuildError(code.IsMinCount, message.IsMinCount, error2.NewParam("count", count))
 		}
 		return nil
 	}
@@ -82,7 +83,7 @@ func IsMinCount[T comparable](count int) SliceRuleFunc[T] {
 func IsMaxCount[T comparable](count int) SliceRuleFunc[T] {
 	return func(ctx context.Context, builder validation.ErrorBuilder, s []T) validation.Error {
 		if len(s) > count {
-			return builder.BuildError(code.IsMaxCount, message.IsMaxCount, NewParam("count", count))
+			return builder.BuildError(code.IsMaxCount, message.IsMaxCount, error2.NewParam("count", count))
 		}
 		return nil
 	}

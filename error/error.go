@@ -1,4 +1,4 @@
-package validator
+package error
 
 import (
 	"encoding/json"
@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/gopi-frame/contract/validation"
 	"strings"
+	"text/template"
 )
 
 type ErrorParam struct {
@@ -29,10 +30,12 @@ func NewParam(key string, value any) *ErrorParam {
 }
 
 type Error struct {
-	code       string
-	message    string
-	params     []validation.Param
-	translator validation.Translator
+	code            string
+	message         string
+	customMessage   string
+	params          []validation.Param
+	translator      validation.Translator
+	renderedMessage string
 }
 
 func NewError(code string, message string, params ...validation.Param) *Error {
@@ -48,15 +51,42 @@ func (e *Error) Code() string {
 }
 
 func (e *Error) Error() string {
+	if e.renderedMessage != "" {
+		return e.renderedMessage
+	}
 	params := map[string]any{}
 	for _, param := range e.params {
+		var value = param.Value()
 		if param.Key() == "attribute" {
-			params[param.Key()] = e.translator.T(fmt.Sprintf("attribute.%s", param.Value()), nil)
-		} else {
-			params[param.Key()] = param.Value()
+			if e.translator != nil {
+				value = e.translator.T(fmt.Sprintf("attribute.%s", param.Value()), nil)
+			}
 		}
+		params[param.Key()] = value
 	}
-	return e.translator.T(e.code, params)
+	var message string
+	if e.customMessage != "" {
+		message = e.customMessage
+		goto RenderMessage
+	} else {
+		message = e.message
+	}
+	if e.translator != nil {
+		e.renderedMessage = e.translator.T(e.code, params)
+		return e.renderedMessage
+	}
+RenderMessage:
+	var sb = new(strings.Builder)
+	if err := template.Must(template.New("").Parse(message)).Execute(sb, params); err != nil {
+		panic(err)
+	}
+	e.renderedMessage = sb.String()
+	return e.renderedMessage
+}
+
+func (e *Error) SetMessage(message string) validation.Error {
+	e.customMessage = message
+	return e
 }
 
 func (e *Error) Message() string {
@@ -147,15 +177,18 @@ func (e Errors) MarshalJSON() ([]byte, error) {
 }
 
 type ErrorBag struct {
-	errors     map[string]Errors
-	translator validation.Translator
-	messages   map[string][]string
+	errors         map[string]Errors
+	translator     validation.Translator
+	messages       map[string][]string
+	customMessages map[string]map[string]string
 }
 
 func NewErrorBag(translator validation.Translator) *ErrorBag {
 	return &ErrorBag{
-		errors:     make(map[string]Errors),
-		translator: translator,
+		errors:         make(map[string]Errors),
+		translator:     translator,
+		messages:       make(map[string][]string),
+		customMessages: make(map[string]map[string]string),
 	}
 }
 
@@ -250,6 +283,20 @@ func (e *ErrorBag) GetMessages() map[string][]string {
 	return errorBag
 }
 
+// SetMessages sets custom error messages
+func (e *ErrorBag) SetMessages(messages map[string]map[string]string) validation.ErrorBag {
+	for key, errs := range e.errors {
+		if customMessages, ok := messages[key]; ok {
+			for code, err := range errs {
+				if customMessage, ok := customMessages[code]; ok {
+					e.errors[key][code] = err.SetMessage(customMessage)
+				}
+			}
+		}
+	}
+	return e
+}
+
 // GetMessage returns the error message for the given key.
 // Once the message is retrieved, it is stored in the messages map.
 func (e *ErrorBag) GetMessage(key string) []string {
@@ -288,6 +335,10 @@ func (e *ErrorBag) Error() string {
 		}
 	}
 	return sb.String()
+}
+
+func (e *ErrorBag) SetMessage(_ string) validation.Error {
+	return e
 }
 
 func (e *ErrorBag) Message() string {

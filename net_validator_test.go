@@ -92,7 +92,7 @@ func TestURLQuery(t *testing.T) {
 		assert.False(t, validated.Fails())
 	})
 	t.Run("invalid", func(t *testing.T) {
-		validated := Validate(context.Background(), URLQuery("Query", "a=1;").SetPath("client.query"))
+		validated := Validate(context.Background(), URLQuery("Query", "a=1;").SetKey("client.query"))
 		if assert.True(t, validated.Fails()) {
 			assert.Equal(t, "Query should be a valid URL query string.", validated.GetError("client.query", code.IsURLQuery).Error())
 		}

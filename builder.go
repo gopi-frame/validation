@@ -3,6 +3,7 @@ package validation
 import (
 	"context"
 	"github.com/gopi-frame/contract/validation"
+	error2 "github.com/gopi-frame/validation/error"
 	"github.com/gopi-frame/validation/validator"
 	"strings"
 )
@@ -31,12 +32,12 @@ func (b *Builder) GetAttribute() string {
 	return b.attribute
 }
 
-func (b *Builder) SetPath(paths ...string) validation.ValidatorBuilder {
+func (b *Builder) SetKey(paths ...string) validation.ValidatorBuilder {
 	b.paths = paths
 	return b
 }
 
-func (b *Builder) GetPath() []string {
+func (b *Builder) GetKey() []string {
 	return b.paths
 }
 
@@ -47,7 +48,7 @@ func (b *Builder) Build(ctx validation.ValidatorContext) {
 	}
 	ctx.AddValidate(strings.Join(paths, "."), validator.ValidatableFunc(func(ctx context.Context, builder validation.ErrorBuilder) validation.Error {
 		if err := b.validator.Validate(ctx, builder); err != nil {
-			err = err.AddParam(validator.NewParam("attribute", b.attribute))
+			err = err.AddParam(error2.NewParam("attribute", b.attribute))
 			return err
 		}
 		return nil
