@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/gopi-frame/contract/validation"
 	"github.com/gopi-frame/validation/code"
+	"github.com/gopi-frame/validation/translator"
 	"github.com/gopi-frame/validation/validator"
 	"github.com/stretchr/testify/assert"
 	"html/template"
@@ -106,6 +107,44 @@ func TestValidator(t *testing.T) {
 			}
 		})
 	})
+
+	t.Run("with translations and default language", func(t *testing.T) {
+		v, err := NewValidator(WithDefaultLanguage("zh-CN"))
+		if err != nil {
+			assert.FailNow(t, err.Error())
+		} else {
+			translator.RegisterTranslation("zh-CN", map[string]string{
+				code.IsNotBlank: "{{.attribute}}不能为空。",
+			})
+			validated := v.Validate(context.Background(), NotBlank("name", ""), GreaterThan("age", 16, 18))
+			assert.Equal(t, true, validated.HasError("name"))
+			errs := validated.GetErrors("name")
+			assert.Len(t, errs, 1)
+			assert.Equal(t, "name不能为空。", errs.Get(code.IsNotBlank).Error())
+			errs = validated.GetErrors("age")
+			assert.Len(t, errs, 1)
+			assert.Equal(t, "age should be greater than 18.", errs.Get(code.IsGreaterThan).Error())
+		}
+	})
+
+	t.Run("with translations and context language", func(t *testing.T) {
+		v, err := NewValidator()
+		if err != nil {
+			assert.FailNow(t, err.Error())
+		} else {
+			translator.RegisterTranslation("zh-CN", map[string]string{
+				code.IsNotBlank: "{{.attribute}}不能为空。",
+			})
+			validated := v.Validate(BindLanguage(context.Background(), "zh-CN"), NotBlank("name", ""), GreaterThan("age", 16, 18))
+			assert.Equal(t, true, validated.HasError("name"))
+			errs := validated.GetErrors("name")
+			assert.Len(t, errs, 1)
+			assert.Equal(t, "name不能为空。", errs.Get(code.IsNotBlank).Error())
+			errs = validated.GetErrors("age")
+			assert.Len(t, errs, 1)
+			assert.Equal(t, "age should be greater than 18.", errs.Get(code.IsGreaterThan).Error())
+		}
+	})
 }
 
 type mockUser struct {
@@ -134,56 +173,15 @@ func (m *mockUser) Validate(ctx context.Context, _ validation.ErrorBuilder) vali
 	)
 }
 
-func TestValidateIt(t *testing.T) {
-	t.Run("valid", func(t *testing.T) {
-		var user = &mockUser{
-			Username: "gopi",
-			Password: "123456",
-			Age:      20,
-			Tags: []string{
-				"golang",
-				"web",
-				"validation",
-			},
-		}
-		validated := ValidateIt(context.Background(), user)
-		assert.False(t, validated.Fails())
-	})
-
-	t.Run("invalid", func(t *testing.T) {
-		var user = &mockUser{
-			Username: "gopi!!!",
-			Password: "1234",
-			Age:      10,
-			Tags: []string{
-				"golang",
-				"golang",
-				"validation!!!!!!!!!!!!",
-				"web",
-				"frame",
-				"too-many",
-			},
-		}
-		validated := ValidateIt(context.Background(), user)
-		if assert.True(t, validated.Fails()) {
-			assert.True(t, validated.HasError("username"))
-			assert.True(t, validated.HasError("password"))
-			assert.True(t, validated.HasError("age"))
-			assert.True(t, validated.HasError("tags"))
-			assert.True(t, validated.HasError("tags.2"))
-		}
-	})
-}
-
 func TestValidator_GlobalCustomErrorMessage(t *testing.T) {
 	var password = "1234"
-	validator, err := NewValidator(WithMessages(map[string]string{
+	v, err := NewValidator(WithMessages(map[string]string{
 		code.IsMinLength: "{{.attribute}}长度不能少于{{.min}}",
 	}))
 	if !assert.NoError(t, err) {
 		assert.FailNow(t, err.Error())
 	}
-	validated := validator.Validate(context.Background(), MinLength("密码", password, 6).SetKey("password"))
+	validated := v.Validate(context.Background(), MinLength("密码", password, 6).SetKey("password"))
 	if assert.True(t, validated.Fails()) {
 		assert.Equal(t, "密码长度不能少于6", validated.GetError("password", code.IsMinLength).Error())
 	}

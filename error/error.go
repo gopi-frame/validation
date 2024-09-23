@@ -176,27 +176,25 @@ func (e Errors) MarshalJSON() ([]byte, error) {
 	return json.Marshal(errs)
 }
 
-type ErrorBag struct {
+type Bag struct {
 	errors         map[string]Errors
-	translator     validation.Translator
 	messages       map[string][]string
 	customMessages map[string]map[string]string
 }
 
-func NewErrorBag(translator validation.Translator) *ErrorBag {
-	return &ErrorBag{
+func NewBag() *Bag {
+	return &Bag{
 		errors:         make(map[string]Errors),
-		translator:     translator,
 		messages:       make(map[string][]string),
 		customMessages: make(map[string]map[string]string),
 	}
 }
 
-func (e *ErrorBag) Fails() bool {
+func (e *Bag) Fails() bool {
 	return len(e.Failed()) > 0
 }
 
-func (e *ErrorBag) Failed() []string {
+func (e *Bag) Failed() []string {
 	var keys []string
 	for key := range e.errors {
 		if len(e.errors[key]) > 0 {
@@ -206,7 +204,7 @@ func (e *ErrorBag) Failed() []string {
 	return keys
 }
 
-func (e *ErrorBag) FailedAt(key string, codes ...string) bool {
+func (e *Bag) FailedAt(key string, codes ...string) bool {
 	if e.errors == nil {
 		return false
 	}
@@ -221,14 +219,14 @@ func (e *ErrorBag) FailedAt(key string, codes ...string) bool {
 	return false
 }
 
-func (e *ErrorBag) HasError(key string) bool {
+func (e *Bag) HasError(key string) bool {
 	if e.errors == nil {
 		return false
 	}
 	return len(e.errors[key]) > 0
 }
 
-func (e *ErrorBag) AddError(key string, err validation.Error) {
+func (e *Bag) AddError(key string, err validation.Error) {
 	if e.errors == nil {
 		e.errors = make(map[string]Errors)
 	}
@@ -254,7 +252,7 @@ func (e *ErrorBag) AddError(key string, err validation.Error) {
 	}
 }
 
-func (e *ErrorBag) GetAllErrors() map[string]validation.Errors {
+func (e *Bag) GetAllErrors() map[string]validation.Errors {
 	errs := make(map[string]validation.Errors)
 	for key, errorList := range e.errors {
 		errs[key] = NewErrors()
@@ -265,17 +263,17 @@ func (e *ErrorBag) GetAllErrors() map[string]validation.Errors {
 	return errs
 }
 
-func (e *ErrorBag) GetErrors(key string) validation.Errors {
+func (e *Bag) GetErrors(key string) validation.Errors {
 	return e.errors[key]
 }
 
-func (e *ErrorBag) GetError(key string, code string) validation.Error {
+func (e *Bag) GetError(key string, code string) validation.Error {
 	return e.errors[key].Get(code)
 }
 
 // GetMessages returns the error messages for all keys.
 // Once the messages are retrieved, they are stored in the messages map.
-func (e *ErrorBag) GetMessages() map[string][]string {
+func (e *Bag) GetMessages() map[string][]string {
 	var errorBag = make(map[string][]string)
 	for key := range e.errors {
 		errorBag[key] = e.GetMessage(key)
@@ -284,7 +282,7 @@ func (e *ErrorBag) GetMessages() map[string][]string {
 }
 
 // SetMessages sets custom error messages
-func (e *ErrorBag) SetMessages(messages map[string]map[string]string) validation.ErrorBag {
+func (e *Bag) SetMessages(messages map[string]map[string]string) validation.ErrorBag {
 	for key, errs := range e.errors {
 		if customMessages, ok := messages[key]; ok {
 			for code, err := range errs {
@@ -299,7 +297,7 @@ func (e *ErrorBag) SetMessages(messages map[string]map[string]string) validation
 
 // GetMessage returns the error message for the given key.
 // Once the message is retrieved, it is stored in the messages map.
-func (e *ErrorBag) GetMessage(key string) []string {
+func (e *Bag) GetMessage(key string) []string {
 	if e.messages == nil {
 		e.messages = make(map[string][]string)
 	}
@@ -314,7 +312,7 @@ func (e *ErrorBag) GetMessage(key string) []string {
 	return errorList
 }
 
-func (e *ErrorBag) Each(f func(key string, errs validation.Errors) bool) {
+func (e *Bag) Each(f func(key string, errs validation.Errors) bool) {
 	for key, errs := range e.errors {
 		if !f(key, errs) {
 			break
@@ -322,11 +320,11 @@ func (e *ErrorBag) Each(f func(key string, errs validation.Errors) bool) {
 	}
 }
 
-func (e *ErrorBag) MarshalJSON() ([]byte, error) {
+func (e *Bag) MarshalJSON() ([]byte, error) {
 	return json.Marshal(e.errors)
 }
 
-func (e *ErrorBag) Error() string {
+func (e *Bag) Error() string {
 	messages := e.GetMessages()
 	sb := new(strings.Builder)
 	for key, msgs := range messages {
@@ -337,23 +335,23 @@ func (e *ErrorBag) Error() string {
 	return sb.String()
 }
 
-func (e *ErrorBag) SetMessage(_ string) validation.Error {
+func (e *Bag) SetMessage(_ string) validation.Error {
 	return e
 }
 
-func (e *ErrorBag) Message() string {
+func (e *Bag) Message() string {
 	return e.Error()
 }
 
-func (e *ErrorBag) Code() string {
+func (e *Bag) Code() string {
 	return ""
 }
 
-func (e *ErrorBag) Params() []validation.Param {
+func (e *Bag) Params() []validation.Param {
 	return nil
 }
 
-func (e *ErrorBag) AddParam(param validation.Param) validation.Error {
+func (e *Bag) AddParam(param validation.Param) validation.Error {
 	for key := range e.errors {
 		for i := range e.errors[key] {
 			e.errors[key][i] = e.errors[key][i].AddParam(param)

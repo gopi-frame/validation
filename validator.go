@@ -5,21 +5,25 @@ import (
 	"github.com/gopi-frame/contract/validation"
 	error2 "github.com/gopi-frame/validation/error"
 	"github.com/gopi-frame/validation/translator"
+	"sync"
 )
 
-var _instance *Validator
+var instance *Validator
 
-func init() {
-	instance, err := NewValidator()
-	if err != nil {
-		panic(err)
-	}
-	_instance = instance
+var once = new(sync.Once)
+
+func GetValidator() *Validator {
+	once.Do(func() {
+		if instance == nil {
+			instance, _ = NewValidator()
+		}
+	})
+	return instance
 }
 
-// SetDefaultValidator replaces the default validator instance with the given one.
+// SetDefaultValidator sets the default validator.
 func SetDefaultValidator(v *Validator) {
-	_instance = v
+	instance = v
 }
 
 type contextKey string
@@ -87,7 +91,7 @@ func (v *Validator) Validate(ctx context.Context, builders ...validation.Validat
 	} else if v2.defaultLanguage != "" {
 		v2.translator = v2.translator.Locale(v.defaultLanguage)
 	}
-	bag := error2.NewErrorBag(v2.translator)
+	bag := error2.NewBag()
 	for key, validators := range validatorCtx.validators {
 		for _, v := range validators {
 			if err := v.Validate(ctx, v2); err != nil {
@@ -108,18 +112,19 @@ func (v *Validator) BuildError(code string, message string, params ...validation
 	return error2.NewError(code, message, params...).SetTranslator(v.translator)
 }
 
-func Validate(ctx context.Context, builders ...validation.ValidatorBuilder) *error2.ErrorBag {
-	return _instance.Validate(ctx, builders...).(*error2.ErrorBag)
+// Validate validates the given value using the given rules.
+func Validate(ctx context.Context, builders ...validation.ValidatorBuilder) *error2.Bag {
+	return GetValidator().Validate(ctx, builders...).(*error2.Bag)
 }
 
-func ValidateIt(ctx context.Context, validatable validation.Validatable) validation.ErrorBag {
-	return _instance.Validate(ctx, NewBuilder(validatable))
-}
-
+// Value validates the given value using the given rules.
+// If the value is an implementation of [validation.Validatable], it will be validated first before the rules.
 func Value[T any](ctx context.Context, value T, rules ...validation.Rule[T]) validation.ErrorBag {
 	return Attribute(ctx, "value", value, rules...)
 }
 
+// Attribute validates the given value using the given rules and attribute name.
+// If the value is an implementation of [validation.Validatable], it will be validated first before the rules.
 func Attribute[T any](ctx context.Context, attribute string, value T, rules ...validation.Rule[T]) validation.ErrorBag {
-	return _instance.Validate(ctx, Group[T](attribute, value, rules...))
+	return Validate(ctx, Group[T](attribute, value, rules...))
 }

@@ -25,24 +25,24 @@ func UUID(attribute string, s string) validation.ValidatorBuilder {
 	return NewBuilder(validator.IsUUID().SetValue(s)).SetAttribute(attribute)
 }
 
-func UUIDV1(attribute string, s string) validation.ValidatorBuilder {
-	return NewBuilder(validator.IsUUIDV1().SetValue(s)).SetAttribute(attribute)
+func UUIDv1(attribute string, s string) validation.ValidatorBuilder {
+	return NewBuilder(validator.IsUUIDv1().SetValue(s)).SetAttribute(attribute)
 }
 
-func UUIDV2(attribute string, s string) validation.ValidatorBuilder {
-	return NewBuilder(validator.IsUUIDV2().SetValue(s)).SetAttribute(attribute)
+func UUIDv2(attribute string, s string) validation.ValidatorBuilder {
+	return NewBuilder(validator.IsUUIDv2().SetValue(s)).SetAttribute(attribute)
 }
 
-func UUIDV3(attribute string, s string) validation.ValidatorBuilder {
-	return NewBuilder(validator.IsUUIDV3().SetValue(s)).SetAttribute(attribute)
+func UUIDv3(attribute string, s string) validation.ValidatorBuilder {
+	return NewBuilder(validator.IsUUIDv3().SetValue(s)).SetAttribute(attribute)
 }
 
-func UUIDV4(attribute string, s string) validation.ValidatorBuilder {
-	return NewBuilder(validator.IsUUIDV4().SetValue(s)).SetAttribute(attribute)
+func UUIDv4(attribute string, s string) validation.ValidatorBuilder {
+	return NewBuilder(validator.IsUUIDv4().SetValue(s)).SetAttribute(attribute)
 }
 
-func UUIDV5(attribute string, s string) validation.ValidatorBuilder {
-	return NewBuilder(validator.IsUUIDV5().SetValue(s)).SetAttribute(attribute)
+func UUIDv5(attribute string, s string) validation.ValidatorBuilder {
+	return NewBuilder(validator.IsUUIDv5().SetValue(s)).SetAttribute(attribute)
 }
 
 func ULID(attribute string, s string) validation.ValidatorBuilder {

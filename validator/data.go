@@ -53,7 +53,7 @@ func IsUUID() StringRuleFunc {
 	}
 }
 
-func IsUUIDV1() StringRuleFunc {
+func IsUUIDv1() StringRuleFunc {
 	return func(ctx context.Context, builder validation.ErrorBuilder, value string) validation.Error {
 		if !is.UUIDV1(value) {
 			return builder.BuildError(code.IsUUIDV1, message.IsUUIDV1)
@@ -62,7 +62,7 @@ func IsUUIDV1() StringRuleFunc {
 	}
 }
 
-func IsUUIDV2() StringRuleFunc {
+func IsUUIDv2() StringRuleFunc {
 	return func(ctx context.Context, builder validation.ErrorBuilder, value string) validation.Error {
 		if !is.UUIDV2(value) {
 			return builder.BuildError(code.IsUUIDV2, message.IsUUIDV2)
@@ -71,7 +71,7 @@ func IsUUIDV2() StringRuleFunc {
 	}
 }
 
-func IsUUIDV3() StringRuleFunc {
+func IsUUIDv3() StringRuleFunc {
 	return func(ctx context.Context, builder validation.ErrorBuilder, value string) validation.Error {
 		if !is.UUIDV3(value) {
 			return builder.BuildError(code.IsUUIDV3, message.IsUUIDV3)
@@ -80,7 +80,7 @@ func IsUUIDV3() StringRuleFunc {
 	}
 }
 
-func IsUUIDV4() StringRuleFunc {
+func IsUUIDv4() StringRuleFunc {
 	return func(ctx context.Context, builder validation.ErrorBuilder, value string) validation.Error {
 		if !is.UUIDV4(value) {
 			return builder.BuildError(code.IsUUIDV4, message.IsUUIDV4)
@@ -89,7 +89,7 @@ func IsUUIDV4() StringRuleFunc {
 	}
 }
 
-func IsUUIDV5() StringRuleFunc {
+func IsUUIDv5() StringRuleFunc {
 	return func(ctx context.Context, builder validation.ErrorBuilder, value string) validation.Error {
 		if !is.UUIDV5(value) {
 			return builder.BuildError(code.IsUUIDV5, message.IsUUIDV5)

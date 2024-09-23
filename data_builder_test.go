@@ -88,13 +88,13 @@ func TestUUID(t *testing.T) {
 func TestUUIDV1(t *testing.T) {
 	t.Run("valid", func(t *testing.T) {
 		var data = "6ba7b810-9dad-11d1-80b4-00c04fd430c8"
-		validated := Validate(context.Background(), UUIDV1("value", data))
+		validated := Validate(context.Background(), UUIDv1("value", data))
 		assert.False(t, validated.Fails())
 	})
 
 	t.Run("invalid", func(t *testing.T) {
 		var data = uuid.NewString()
-		validated := Validate(context.Background(), UUIDV1("value", data))
+		validated := Validate(context.Background(), UUIDv1("value", data))
 		assert.True(t, validated.Fails())
 		assert.Equal(t, "value should be a valid version 1 UUID.", validated.GetError("value", code.IsUUIDV1).Error())
 	})
@@ -103,13 +103,13 @@ func TestUUIDV1(t *testing.T) {
 func TestUUIDV2(t *testing.T) {
 	t.Run("valid", func(t *testing.T) {
 		var data = uuid.Must(uuid.NewDCEPerson()).String()
-		validated := Validate(context.Background(), UUIDV2("value", data))
+		validated := Validate(context.Background(), UUIDv2("value", data))
 		assert.False(t, validated.Fails())
 	})
 
 	t.Run("invalid", func(t *testing.T) {
 		var data = uuid.NewString()
-		validated := Validate(context.Background(), UUIDV2("value", data))
+		validated := Validate(context.Background(), UUIDv2("value", data))
 		assert.True(t, validated.Fails())
 		assert.Equal(t, "value should be a valid version 2 UUID.", validated.GetError("value", code.IsUUIDV2).Error())
 	})
@@ -118,13 +118,13 @@ func TestUUIDV2(t *testing.T) {
 func TestUUIDV3(t *testing.T) {
 	t.Run("valid", func(t *testing.T) {
 		var data = uuid.NewMD5(uuid.NameSpaceDNS, []byte("gopi")).String()
-		validated := Validate(context.Background(), UUIDV3("value", data))
+		validated := Validate(context.Background(), UUIDv3("value", data))
 		assert.False(t, validated.Fails())
 	})
 
 	t.Run("invalid", func(t *testing.T) {
 		var data = uuid.NewString()
-		validated := Validate(context.Background(), UUIDV3("value", data))
+		validated := Validate(context.Background(), UUIDv3("value", data))
 		assert.True(t, validated.Fails())
 		assert.Equal(t, "value should be a valid version 3 UUID.", validated.GetError("value", code.IsUUIDV3).Error())
 	})
@@ -133,13 +133,13 @@ func TestUUIDV3(t *testing.T) {
 func TestUUIDV4(t *testing.T) {
 	t.Run("valid", func(t *testing.T) {
 		var data = uuid.New().String()
-		validated := Validate(context.Background(), UUIDV4("value", data))
+		validated := Validate(context.Background(), UUIDv4("value", data))
 		assert.False(t, validated.Fails())
 	})
 
 	t.Run("invalid", func(t *testing.T) {
 		var data = uuid.NewMD5(uuid.NameSpaceDNS, []byte("gopi")).String()
-		validated := Validate(context.Background(), UUIDV4("value", data))
+		validated := Validate(context.Background(), UUIDv4("value", data))
 		assert.True(t, validated.Fails())
 		assert.Equal(t, "value should be a valid version 4 UUID.", validated.GetError("value", code.IsUUIDV4).Error())
 	})
@@ -148,13 +148,13 @@ func TestUUIDV4(t *testing.T) {
 func TestUUIDV5(t *testing.T) {
 	t.Run("valid", func(t *testing.T) {
 		var data = uuid.NewSHA1(uuid.NameSpaceDNS, []byte("gopi")).String()
-		validated := Validate(context.Background(), UUIDV5("value", data))
+		validated := Validate(context.Background(), UUIDv5("value", data))
 		assert.False(t, validated.Fails())
 	})
 
 	t.Run("invalid", func(t *testing.T) {
 		var data = uuid.NewString()
-		validated := Validate(context.Background(), UUIDV5("value", data))
+		validated := Validate(context.Background(), UUIDv5("value", data))
 		assert.True(t, validated.Fails())
 		assert.Equal(t, "value should be a valid version 5 UUID.", validated.GetError("value", code.IsUUIDV5).Error())
 	})

@@ -40,7 +40,7 @@ func AlphaNumeric(s string) bool {
 
 func AlphaDash(s string) bool {
 	for _, r := range s {
-		if !unicode.IsLetter(r) && !unicode.IsNumber(r) && r != '-' && r != '_' && r != '.' {
+		if !unicode.IsLetter(r) && !unicode.IsNumber(r) && r != '-' && r != '_' {
 			return false
 		}
 	}
@@ -67,7 +67,7 @@ func AsciiNumeric(s string) bool {
 
 func AsciiDash(s string) bool {
 	for _, r := range s {
-		if (r < 'a' || r > 'z') && (r < 'A' || r > 'Z') && (r < '0' || r > '9') && r != '-' && r != '_' && r != '.' {
+		if (r < 'a' || r > 'z') && (r < 'A' || r > 'Z') && (r < '0' || r > '9') && r != '-' && r != '_' {
 			return false
 		}
 	}

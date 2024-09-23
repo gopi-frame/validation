@@ -70,3 +70,59 @@ func TestEach_Deep(t *testing.T) {
 		assert.True(t, errs.Has(code.IsMatch))
 	}
 }
+
+func TestEach_ValidatableImpl(t *testing.T) {
+	t.Run("valid", func(t *testing.T) {
+		var users = []*mockUser{
+			{
+				Username: "gopi",
+				Password: "password123!",
+				Age:      25,
+				Tags:     nil,
+			},
+			{
+				Username: "gopi",
+				Password: "password123!",
+				Age:      25,
+				Tags:     nil,
+			},
+			{
+				Username: "gopi",
+				Password: "password123!",
+				Age:      25,
+				Tags:     nil,
+			},
+		}
+		validated := Validate(context.Background(), Each("Users", users))
+		assert.False(t, validated.Fails())
+	})
+
+	t.Run("invalid", func(t *testing.T) {
+		var users = []*mockUser{
+			{
+				Username: "gopi",
+				Password: "password123!",
+				Age:      25,
+				Tags:     nil,
+			},
+			{
+				Username: "gopi",
+				Password: "password123!",
+				Age:      25,
+				Tags:     nil,
+			},
+			{
+				Username: "gopi",
+				Password: "password123!*()123α",
+				Age:      25,
+				Tags:     nil,
+			},
+		}
+		validated := Validate(context.Background(), Each("Users", users))
+		if assert.True(t, validated.Fails()) {
+			assert.True(t, validated.HasError("Users.2.password"))
+			assert.True(t, validated.FailedAt("Users.2.password", code.IsMaxLength))
+			assert.True(t, validated.FailedAt("Users.2.password", code.IsMatch))
+		}
+	})
+}
