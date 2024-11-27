@@ -2,10 +2,11 @@ package validation
 
 import (
 	"context"
+	"strings"
+
 	"github.com/gopi-frame/contract/validation"
 	error2 "github.com/gopi-frame/validation/error"
 	"github.com/gopi-frame/validation/validator"
-	"strings"
 )
 
 type Path struct {
@@ -48,6 +49,9 @@ func (b *Builder) Build(ctx validation.ValidatorContext) {
 	}
 	ctx.AddValidate(strings.Join(paths, "."), validator.ValidatableFunc(func(ctx context.Context, builder validation.ErrorBuilder) validation.Error {
 		if err := b.validator.Validate(ctx, builder); err != nil {
+			if err.HasParam("attribute") {
+				return err
+			}
 			err = err.AddParam(error2.NewParam("attribute", b.attribute))
 			return err
 		}

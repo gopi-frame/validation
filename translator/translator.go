@@ -2,12 +2,13 @@ package translator
 
 import (
 	"fmt"
-	"github.com/gopi-frame/contract/validation"
-	"github.com/gopi-frame/validation/code"
-	"github.com/gopi-frame/validation/message"
 	"strings"
 	"sync"
 	"text/template"
+
+	"github.com/gopi-frame/contract/validation"
+	"github.com/gopi-frame/validation/code"
+	"github.com/gopi-frame/validation/message"
 )
 
 var fallback = new(sync.Map)
@@ -157,6 +158,17 @@ func init() {
 	fallback.Store(code.IsURLWithScheme, template.Must(template.New(code.IsURLWithScheme).Parse(message.IsURLWithScheme)))
 	fallback.Store(code.IsRequestURI, template.Must(template.New(code.IsRequestURI).Parse(message.IsRequestURI)))
 	fallback.Store(code.IsURLQuery, template.Must(template.New(code.IsURLQuery).Parse(message.IsURLQuery)))
+
+	fallback.Store(code.IsEnum, template.Must(template.New(code.IsEnum).Parse(message.IsEnum)))
+	fallback.Store(code.IsEnumString, template.Must(template.New(code.IsEnumString).Parse(message.IsEnumString)))
+	fallback.Store(code.IsEnumValue, template.Must(template.New(code.IsEnumValue).Parse(message.IsEnumValue)))
+
+	fallback.Store(code.IsPathExists, template.Must(template.New(code.IsPathExists).Parse(message.IsPathExists)))
+	fallback.Store(code.IsPathNotExists, template.Must(template.New(code.IsPathNotExists).Parse(message.IsPathNotExists)))
+	fallback.Store(code.IsPathFile, template.Must(template.New(code.IsPathFile).Parse(message.IsPathFile)))
+	fallback.Store(code.IsPathDir, template.Must(template.New(code.IsPathDir).Parse(message.IsPathDir)))
+	fallback.Store(code.IsPathAbsolute, template.Must(template.New(code.IsPathAbsolute).Parse(message.IsPathAbsolute)))
+	fallback.Store(code.IsPathRelative, template.Must(template.New(code.IsPathRelative).Parse(message.IsPathRelative)))
 
 	translations.Store(fallbackLanguage, fallback)
 }

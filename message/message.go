@@ -102,3 +102,18 @@ const (
 	IsRequestURI    = "{{.attribute}} should be a valid request URI."
 	IsURLQuery      = "{{.attribute}} should be a valid URL query string."
 )
+
+const (
+	IsEnum       = "{{.attribute}} should be a valid enum value."
+	IsEnumString = "{{.attribute}} should be a valid enum value."
+	IsEnumValue  = "{{.attribute}} should be a valid enum value."
+)
+
+const (
+	IsPathExists    = "{{.attribute}} should be an existing path."
+	IsPathNotExists = "{{.attribute}} should not be an existing path."
+	IsPathDir       = "{{.attribute}} should be a directory."
+	IsPathFile      = "{{.attribute}} should be a file."
+	IsPathAbsolute  = "{{.attribute}} should be an absolute path."
+	IsPathRelative  = "{{.attribute}} should be a relative path."
+)

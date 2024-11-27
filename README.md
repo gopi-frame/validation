@@ -358,7 +358,7 @@ func main() {
         Name: "gopi",
         Age:  25,
     }
-    validated := validation.Validate(context.Context(), user)
+    validated := validation.Attribute(context.Context(), "User", user)
     if validated.Fails() {
         fmt.Println(validated.GetMessages())
     }

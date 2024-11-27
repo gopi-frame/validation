@@ -4,9 +4,10 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/gopi-frame/contract/validation"
 	"strings"
 	"text/template"
+
+	"github.com/gopi-frame/contract/validation"
 )
 
 type ErrorParam struct {
@@ -95,6 +96,15 @@ func (e *Error) Message() string {
 
 func (e *Error) Params() []validation.Param {
 	return e.params
+}
+
+func (e *Error) HasParam(key string) bool {
+	for _, param := range e.params {
+		if param.Key() == key {
+			return true
+		}
+	}
+	return false
 }
 
 func (e *Error) AddParam(param validation.Param) validation.Error {
@@ -230,7 +240,6 @@ func (e *Bag) AddError(key string, err validation.Error) {
 	if e.errors == nil {
 		e.errors = make(map[string]Errors)
 	}
-
 	var errorBag validation.ErrorBag
 	if errors.As(err, &errorBag) {
 		errorBag.Each(func(k string, errs validation.Errors) bool {
@@ -354,8 +363,21 @@ func (e *Bag) Params() []validation.Param {
 func (e *Bag) AddParam(param validation.Param) validation.Error {
 	for key := range e.errors {
 		for i := range e.errors[key] {
-			e.errors[key][i] = e.errors[key][i].AddParam(param)
+			if !e.errors[key][i].HasParam(param.Key()) {
+				e.errors[key][i] = e.errors[key][i].AddParam(param)
+			}
 		}
 	}
 	return e
+}
+
+func (e *Bag) HasParam(key string) bool {
+	for k := range e.errors {
+		for _, err := range e.errors[k] {
+			if !err.HasParam(key) {
+				return false
+			}
+		}
+	}
+	return true
 }

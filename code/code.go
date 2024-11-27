@@ -109,3 +109,20 @@ const (
 	IsRequestURI    = "is_request_uri"
 	IsURLQuery      = "is_url_query"
 )
+
+// enum validator codes
+const (
+	IsEnum       = "is_enum"
+	IsEnumString = "is_enum_string"
+	IsEnumValue  = "is_enum_value"
+)
+
+// filepath validator codes
+const (
+	IsPathExists    = "is_path_exists"
+	IsPathNotExists = "is_path_not_exists"
+	IsPathFile      = "is_path_file"
+	IsPathDir       = "is_path_dir"
+	IsPathAbsolute  = "is_path_absolute"
+	IsPathRelative  = "is_path_relative"
+)
