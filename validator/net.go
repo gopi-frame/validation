@@ -2,9 +2,10 @@ package validator
 
 import (
 	"context"
+
 	"github.com/gopi-frame/contract/validation"
 	"github.com/gopi-frame/validation/code"
-	error2 "github.com/gopi-frame/validation/error"
+	error2 "github.com/gopi-frame/validation/errpack"
 	"github.com/gopi-frame/validation/is"
 	"github.com/gopi-frame/validation/message"
 )

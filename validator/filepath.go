@@ -10,7 +10,7 @@ import (
 	"github.com/gopi-frame/validation/code"
 
 	"github.com/gopi-frame/contract/validation"
-	"github.com/gopi-frame/validation/error"
+	"github.com/gopi-frame/validation/errpack"
 )
 
 func IsPathExists() StringRuleFunc {
@@ -19,7 +19,7 @@ func IsPathExists() StringRuleFunc {
 			return builder.BuildError(
 				code.IsPathExists,
 				message.IsPathExists,
-				error.NewParam("value", value),
+				errpack.NewParam("value", value),
 			)
 		}
 		return nil
@@ -32,7 +32,7 @@ func IsPathNotExists() StringRuleFunc {
 			return builder.BuildError(
 				code.IsPathNotExists,
 				message.IsPathNotExists,
-				error.NewParam("value", value),
+				errpack.NewParam("value", value),
 			)
 		}
 		return nil
@@ -45,13 +45,13 @@ func IsPathFile() StringRuleFunc {
 			return builder.BuildError(
 				code.IsPathFile,
 				message.IsPathFile,
-				error.NewParam("value", value),
+				errpack.NewParam("value", value),
 			)
 		} else if info.IsDir() {
 			return builder.BuildError(
 				code.IsPathFile,
 				message.IsPathFile,
-				error.NewParam("value", value),
+				errpack.NewParam("value", value),
 			)
 		}
 		return nil
@@ -64,13 +64,13 @@ func IsPathDir() StringRuleFunc {
 			return builder.BuildError(
 				code.IsPathDir,
 				message.IsPathDir,
-				error.NewParam("value", value),
+				errpack.NewParam("value", value),
 			)
 		} else if !info.IsDir() {
 			return builder.BuildError(
 				code.IsPathDir,
 				code.IsPathDir,
-				error.NewParam("value", value),
+				errpack.NewParam("value", value),
 			)
 		}
 		return nil
@@ -83,7 +83,7 @@ func IsPathAbsolute() StringRuleFunc {
 			return builder.BuildError(
 				code.IsPathAbsolute,
 				message.IsPathAbsolute,
-				error.NewParam("value", value),
+				errpack.NewParam("value", value),
 			)
 		}
 		return nil
@@ -96,7 +96,7 @@ func IsPathRelative() StringRuleFunc {
 			return builder.BuildError(
 				code.IsPathRelative,
 				message.IsPathRelative,
-				error.NewParam("value", value),
+				errpack.NewParam("value", value),
 			)
 		}
 		return nil

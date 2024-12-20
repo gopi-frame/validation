@@ -1,4 +1,4 @@
-package error
+package errpack
 
 import (
 	"encoding/json"

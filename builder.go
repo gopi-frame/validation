@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"github.com/gopi-frame/contract/validation"
-	error2 "github.com/gopi-frame/validation/error"
+	error2 "github.com/gopi-frame/validation/errpack"
 	"github.com/gopi-frame/validation/validator"
 )
 

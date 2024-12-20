@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/gopi-frame/contract/validation"
-	error2 "github.com/gopi-frame/validation/error"
+	error2 "github.com/gopi-frame/validation/errpack"
 )
 
 // Group returns a validator builder that validates the given value using the given rules.

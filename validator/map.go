@@ -3,11 +3,12 @@ package validator
 import (
 	"context"
 	"fmt"
+	"strconv"
+
 	"github.com/gopi-frame/contract/validation"
 	"github.com/gopi-frame/validation/code"
-	error2 "github.com/gopi-frame/validation/error"
+	error2 "github.com/gopi-frame/validation/errpack"
 	"github.com/gopi-frame/validation/message"
-	"strconv"
 )
 
 func IsContainsKey[K comparable, V any](key K) MapRuleFunc[K, V] {

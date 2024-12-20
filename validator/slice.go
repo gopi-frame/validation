@@ -3,12 +3,13 @@ package validator
 import (
 	"context"
 	"fmt"
-	"github.com/gopi-frame/contract/validation"
-	"github.com/gopi-frame/validation/code"
-	error2 "github.com/gopi-frame/validation/error"
-	"github.com/gopi-frame/validation/message"
 	"slices"
 	"strings"
+
+	"github.com/gopi-frame/contract/validation"
+	"github.com/gopi-frame/validation/code"
+	error2 "github.com/gopi-frame/validation/errpack"
+	"github.com/gopi-frame/validation/message"
 )
 
 func IsIncludes[T comparable](elements ...T) SliceRuleFunc[T] {
