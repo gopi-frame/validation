@@ -68,15 +68,16 @@ func (e *Error) Error() string {
 	var message string
 	if e.customMessage != "" {
 		message = e.customMessage
-		goto RenderMessage
+	} else if e.translator != nil {
+		e.renderedMessage = e.translator.T(e.code, params)
+		if e.renderedMessage == "" {
+			message = e.message
+		} else {
+			return e.renderedMessage
+		}
 	} else {
 		message = e.message
 	}
-	if e.translator != nil {
-		e.renderedMessage = e.translator.T(e.code, params)
-		return e.renderedMessage
-	}
-RenderMessage:
 	var sb = new(strings.Builder)
 	if err := template.Must(template.New("").Parse(message)).Execute(sb, params); err != nil {
 		panic(err)

@@ -1,7 +1,6 @@
 package translator
 
 import (
-	"fmt"
 	"strings"
 	"sync"
 	"text/template"
@@ -49,11 +48,7 @@ func (t *Translator) T(key string, params map[string]any) string {
 			panic(err)
 		}
 	} else {
-		sb.WriteString(key)
-		if len(params) > 0 {
-			sb.WriteString(": ")
-			sb.WriteString(fmt.Sprintf("%v", params))
-		}
+		return ""
 	}
 	return sb.String()
 }
