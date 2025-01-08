@@ -2,10 +2,11 @@ package validation
 
 import (
 	"context"
+	"testing"
+
 	"github.com/gopi-frame/validation/code"
 	"github.com/gopi-frame/validation/validator"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 func TestEach(t *testing.T) {
@@ -15,7 +16,11 @@ func TestEach(t *testing.T) {
 			"password123!",
 			"password123!",
 		}
-		validated := Validate(context.Background(), Each(
+		v, err := NewValidator()
+		if err != nil {
+			t.Fatal(err)
+		}
+		validated := v.Validate(context.Background(), Each(
 			"password",
 			passwords,
 			validator.IsNotBlank[string](),
@@ -30,7 +35,11 @@ func TestEach(t *testing.T) {
 			"password123!",
 			"password123!*()123α",
 		}
-		validated := Validate(context.Background(), Each(
+		v, err := NewValidator()
+		if err != nil {
+			t.Fatal(err)
+		}
+		validated := v.Validate(context.Background(), Each(
 			"password",
 			passwords,
 			validator.IsNotBlank[string](),
@@ -54,7 +63,11 @@ func TestEach_Deep(t *testing.T) {
 			"password123!*()123α",
 		},
 	}
-	validated := Validate(context.Background(), Each(
+	v, err := NewValidator()
+	if err != nil {
+		t.Fatal(err)
+	}
+	validated := v.Validate(context.Background(), Each(
 		"password",
 		passwords,
 		validator.Each[string](
@@ -93,7 +106,11 @@ func TestEach_ValidatableImpl(t *testing.T) {
 				Tags:     nil,
 			},
 		}
-		validated := Validate(context.Background(), Each("Users", users))
+		v, err := NewValidator()
+		if err != nil {
+			t.Fatal(err)
+		}
+		validated := v.Validate(context.Background(), Each("Users", users))
 		assert.False(t, validated.Fails())
 	})
 
@@ -118,7 +135,11 @@ func TestEach_ValidatableImpl(t *testing.T) {
 				Tags:     nil,
 			},
 		}
-		validated := Validate(context.Background(), Each("Users", users))
+		v, err := NewValidator()
+		if err != nil {
+			t.Fatal(err)
+		}
+		validated := v.Validate(context.Background(), Each("Users", users))
 		if assert.True(t, validated.Fails()) {
 			assert.True(t, validated.HasError("Users.2.password"))
 			assert.True(t, validated.FailedAt("Users.2.password", code.IsMaxLength))

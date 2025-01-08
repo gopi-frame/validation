@@ -2,16 +2,21 @@ package validation
 
 import (
 	"context"
+	"testing"
+
 	"github.com/gopi-frame/validation/code"
 	"github.com/gopi-frame/validation/validator"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 func TestIf(t *testing.T) {
 	t.Run("valid", func(t *testing.T) {
 		var value = "password123456"
-		validated := Validate(context.Background(), If(
+		v, err := NewValidator()
+		if err != nil {
+			t.Fatal(err)
+		}
+		validated := v.Validate(context.Background(), If(
 			true,
 			"password",
 			value,
@@ -25,7 +30,11 @@ func TestIf(t *testing.T) {
 
 	t.Run("skip", func(t *testing.T) {
 		var value = "toolooooooooooooooooooooooooooog"
-		validated := Validate(context.Background(), If(
+		v, err := NewValidator()
+		if err != nil {
+			t.Fatal(err)
+		}
+		validated := v.Validate(context.Background(), If(
 			false,
 			"password",
 			value,
@@ -39,7 +48,11 @@ func TestIf(t *testing.T) {
 
 	t.Run("invalid", func(t *testing.T) {
 		var value = "toolooooooooooooooooooooooooooog"
-		validated := Validate(context.Background(), If(
+		v, err := NewValidator()
+		if err != nil {
+			t.Fatal(err)
+		}
+		validated := v.Validate(context.Background(), If(
 			true,
 			"password",
 			value,

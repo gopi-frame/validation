@@ -2,15 +2,20 @@ package validation
 
 import (
 	"context"
+	"testing"
+
 	"github.com/gopi-frame/validation/code"
 	"github.com/gopi-frame/validation/validator"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 func TestGroup(t *testing.T) {
 	t.Run("valid", func(t *testing.T) {
-		validated := Validate(context.Background(), Group(
+		v, err := NewValidator()
+		if err != nil {
+			t.Fatal(err)
+		}
+		validated := v.Validate(context.Background(), Group(
 			"password",
 			"123456",
 			validator.IsNotBlank[string](),
@@ -22,7 +27,11 @@ func TestGroup(t *testing.T) {
 	})
 
 	t.Run("invalid", func(t *testing.T) {
-		validated := Validate(context.Background(), Group(
+		v, err := NewValidator()
+		if err != nil {
+			t.Fatal(err)
+		}
+		validated := v.Validate(context.Background(), Group(
 			"password",
 			"123456123456|||||||",
 			validator.IsNotBlank[string](),
@@ -46,7 +55,11 @@ func TestGroup_ValidatableImpl(t *testing.T) {
 			Age:      25,
 			Tags:     nil,
 		}
-		validated := Validate(context.Background(), Group(
+		v, err := NewValidator()
+		if err != nil {
+			t.Fatal(err)
+		}
+		validated := v.Validate(context.Background(), Group(
 			"User",
 			user,
 		))
@@ -60,7 +73,11 @@ func TestGroup_ValidatableImpl(t *testing.T) {
 			Age:      25,
 			Tags:     nil,
 		}
-		validated := Validate(context.Background(), Group(
+		v, err := NewValidator()
+		if err != nil {
+			t.Fatal(err)
+		}
+		validated := v.Validate(context.Background(), Group(
 			"User",
 			user,
 		))

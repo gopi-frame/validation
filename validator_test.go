@@ -2,14 +2,15 @@ package validation
 
 import (
 	"context"
+	"html/template"
+	"strings"
+	"testing"
+
 	"github.com/gopi-frame/contract/validation"
 	"github.com/gopi-frame/validation/code"
 	"github.com/gopi-frame/validation/translator"
 	"github.com/gopi-frame/validation/validator"
 	"github.com/stretchr/testify/assert"
-	"html/template"
-	"strings"
-	"testing"
 )
 
 var mockMessages = map[string]map[string]string{
@@ -155,7 +156,8 @@ type mockUser struct {
 }
 
 func (m *mockUser) Validate(ctx context.Context, _ validation.ErrorBuilder) validation.Error {
-	return Validate(ctx,
+	v, _ := NewValidator()
+	return v.Validate(ctx,
 		Group("username", m.Username, validator.IsNotBlank[string](), validator.IsAsciiNumeric()),
 		Group(
 			"password",
@@ -184,17 +186,5 @@ func TestValidator_GlobalCustomErrorMessage(t *testing.T) {
 	validated := v.Validate(context.Background(), MinLength("密码", password, 6).SetKey("password"))
 	if assert.True(t, validated.Fails()) {
 		assert.Equal(t, "密码长度不能少于6", validated.GetError("password", code.IsMinLength).Error())
-	}
-}
-
-func TestValidate_PartCustomErrorMessage(t *testing.T) {
-	var password = "1234"
-	validated := Validate(context.Background(), MinLength("password", password, 6)).SetMessages(map[string]map[string]string{
-		"password": {
-			code.IsMinLength: "密码长度不能小于6",
-		},
-	})
-	if assert.True(t, validated.Fails()) {
-		assert.Equal(t, "密码长度不能小于6", validated.GetError("password", code.IsMinLength).Error())
 	}
 }

@@ -2,30 +2,11 @@ package validation
 
 import (
 	"context"
-	"sync"
 
 	"github.com/gopi-frame/contract/validation"
 	error2 "github.com/gopi-frame/validation/errpack"
 	"github.com/gopi-frame/validation/translator"
 )
-
-var instance *Validator
-
-var once = new(sync.Once)
-
-func GetValidator() *Validator {
-	once.Do(func() {
-		if instance == nil {
-			instance, _ = NewValidator()
-		}
-	})
-	return instance
-}
-
-// SetDefaultValidator sets the default validator.
-func SetDefaultValidator(v *Validator) {
-	instance = v
-}
 
 type contextKey string
 
@@ -111,21 +92,4 @@ func (v *Validator) BuildError(code string, message string, params ...validation
 		return v.errorBuilder.BuildError(code, message, params...)
 	}
 	return error2.NewError(code, message, params...).SetTranslator(v.translator)
-}
-
-// Validate validates the given value using the given rules.
-func Validate(ctx context.Context, builders ...validation.ValidatorBuilder) *error2.Bag {
-	return GetValidator().Validate(ctx, builders...).(*error2.Bag)
-}
-
-// Value validates the given value using the given rules.
-// If the value is an implementation of [validation.Validatable], it will be validated first before the rules.
-func Value[T any](ctx context.Context, value T, rules ...validation.Rule[T]) validation.ErrorBag {
-	return Attribute(ctx, "value", value, rules...)
-}
-
-// Attribute validates the given value using the given rules and attribute name.
-// If the value is an implementation of [validation.Validatable], it will be validated first before the rules.
-func Attribute[T any](ctx context.Context, attribute string, value T, rules ...validation.Rule[T]) validation.ErrorBag {
-	return Validate(ctx, Group[T](attribute, value, rules...))
 }
